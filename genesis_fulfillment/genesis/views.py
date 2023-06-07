@@ -146,7 +146,6 @@ async def unit_sensor_map(sensor_id : int, sensor_data_service : SensorDataServi
     sensor_metatdata = await sensor_data_service.get_sensor_metadata(sensor_id)
     if sensor_metatdata is None:
         raise HTTPException(400, detail="Sensor id %d does not exist" % sensor_id)
-    # i have to change this structure
     return sensor_metatdata.sensor_status
 
 @data_router.get("/sensor_data")
