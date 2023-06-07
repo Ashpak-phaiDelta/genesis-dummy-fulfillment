@@ -10,12 +10,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 # Routers
-from fake_genesis_fulfillment import fake_genesis
+from genesis_fulfillment import genesis
 
 from abot_sdk import AbotFulfillmentAPI, FulfillmentRouter
 
-from fake_genesis_fulfillment.db import Base, Connection, get_engine, get_schema_mapping
-from fake_genesis_fulfillment.config import Settings
+from genesis_fulfillment.db import BASE, Connection, get_engine
+from genesis_fulfillment.config import Settings
 
 
 def create_app() -> FastAPI:
@@ -52,19 +52,19 @@ def create_app() -> FastAPI:
 
         mutex = Lock()
 
-        schema_mapping = get_schema_mapping()
+        # schema_mapping = get_schema_mapping()
 
         with mutex: # Prevent multiple workers conflicting with each other
             async with engine.begin() as conn:
                 logger.info("Creating/updating DB schema (if needed)...")
                 await asyncio.gather(*[
                     conn.execute(
-                        CreateSchema(schema_mapping.get(schema_name, schema_name), if_not_exists=True)
+                        CreateSchema(schema_name, if_not_exists=True)
                     )
-                    for schema_name in Base.metadata._schemas
+                    for schema_name in BASE.metadata._schemas
                 ])
                 logger.info("Creating/updating tables (if needed)...")
-                await conn.run_sync(Base.metadata.create_all)
+                await conn.run_sync(BASE.metadata.create_all)
 
     ### Exception handlers ###
 
@@ -79,14 +79,14 @@ def create_app() -> FastAPI:
     ### Routes ###
 
     # Add routes to the application
-    app.include_router(fake_genesis.router)
+    app.include_router(genesis.router)
 
     # Abot fulfillment API
     abot_api = AbotFulfillmentAPI(
-        FulfillmentRouter(service_name="genesis", router=fake_genesis.router),
+        FulfillmentRouter(service_name="genesis", router=genesis.router),
         app_class="genesis",
-        friendly_name="Fake Genesis",
-        description="Genesis simulation with dummy data",
+        friendly_name="Genesis UAT",
+        description="Genesis UAT platform interface",
         version="1.0.0"
     )
 

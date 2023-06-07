@@ -17,3 +17,9 @@ class DBSettings(BaseSettings):
 
     class Config:
         env_file = ".env"
+
+class GenesisDBSettings(BaseSettings):
+    genesis_db_uri:  AnyUrl 
+
+    class Config:
+        env_file = ".env"
