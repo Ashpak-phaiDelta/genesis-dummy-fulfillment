@@ -15,11 +15,25 @@ from typing_extensions import NotRequired, TypedDict
 class SensorHealthOut(BaseModel):
     code_name: str
 
+class UnitHealthOut(BaseModel):
+    code_name: str
+
+class LocationHealthOut(BaseModel):
+    code_name: str
+
 
 class SensorStateOut(BaseModel):
     last_value: dict #Optional[SensorValue]
     last_timestamp: str#Optional[datetime]
     sensor_health: Optional[SensorHealthOut]
+
+class UnitStateOut(BaseModel):
+    last_timestamp: str#Optional[datetime]
+    unit_health: Optional[UnitHealthOut]
+
+class LocationStateOut(BaseModel):
+    last_timestamp: str#Optional[datetime]
+    location_health: Optional[LocationHealthOut]
 
 class UnitMetadata(BaseModel):
     '''Information regarding this Unit (room)'''
@@ -36,7 +50,6 @@ class SensorMetadataBase(BaseModel):
     sensor_alias: Optional[str]
     sensor_type: Optional[str]
     display_unit: Optional[str]
-
 
 
 class SensorMetadataOut(SensorMetadataBase):
@@ -64,10 +77,17 @@ class PlotlyFigureOut(PlotlyFigure):
 class SensorStatus(BaseModel):
     '''Information regarding sensor Status'''
     sensor_id : int
-    state : str
-    location_id : Optional[int]
+    sensor_status : Optional[SensorStateOut]
 
 class SensorDataOut(BaseModel):
     sensor_id : int
     value : Optional[dict]
     timestamp : str
+
+class UnitStatus(BaseModel):
+    unit_id : int
+    unit_status : Optional[UnitStateOut]
+
+class LocationStatus(BaseModel):
+    location_id : int
+    location_status : Optional[LocationStateOut]

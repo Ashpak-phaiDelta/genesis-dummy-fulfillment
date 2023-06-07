@@ -7,7 +7,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse, HTMLResponse
 
-from .schemas import PlotlyFigureOut
+from .schemas import PlotlyFigureOut , SensorStatus
 from .services import ( JSONEncodeData, SensorDataService, UnitService , InteractiveGraphService, GraphPlotService)
 
 
@@ -146,7 +146,10 @@ async def unit_sensor_map(sensor_id : int, sensor_data_service : SensorDataServi
     sensor_metatdata = await sensor_data_service.get_sensor_metadata(sensor_id)
     if sensor_metatdata is None:
         raise HTTPException(400, detail="Sensor id %d does not exist" % sensor_id)
-    return sensor_metatdata.sensor_status
+    return SensorStatus(
+        sensor_id=sensor_metatdata.sensor_id,
+        sensor_status=sensor_metatdata.sensor_status
+    )
 
 @data_router.get("/sensor_data")
 async def sensor_data(sensor_id: int,
@@ -160,6 +163,22 @@ async def sensor_data(sensor_id: int,
         'metadata': sensor_metadata,
         'data': sensor_point_data
     }
+
+@query_router.get("/unit_status")
+async def unit_status(unit_id : int, unit_service : UnitService = Depends(UnitService)):
+    unit_status = await unit_service.get_unit_status(unit_id)
+    if unit_status is None:
+        raise HTTPException(400, detail="Unit of id %d does not exist" % unit_id)
+    return unit_status
+
+@query_router.get("/location_status")
+async def location_status(location_id : int, unit_service : UnitService = Depends(UnitService)):
+    location_status = await unit_service.get_unit_status(location_id)
+    if location_status is None:
+        raise HTTPException(400, detail="Unit of id %d does not exist" % location_id)
+    return location_status
+
+
 
 ##### Nested routers #####
 

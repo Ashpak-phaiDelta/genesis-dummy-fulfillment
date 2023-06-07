@@ -21,8 +21,8 @@ from genesis_fulfillment.db import Session, Transaction, get_session
 
 from ..statistics.services import DataStatisticsService
 from .models import (Sensor, Unit, UnitSensorMap , VWSensorStatus)
-from .schemas import (PlotlyFigure,  SensorMetadataBase, SensorStatus,SensorHealthOut,SensorStateOut,SensorDataOut,
-                      SensorMetadataOut, UnitMetadata)
+from .schemas import (PlotlyFigure,  SensorMetadataBase, SensorStatus,SensorHealthOut,SensorStateOut,SensorDataOut, UnitStatus,
+                      SensorMetadataOut, UnitMetadata, UnitHealthOut, UnitStateOut, LocationStatus, LocationStateOut, LocationHealthOut)
 
 SENSOR_TYPE_TABLE = {
     'Temperature' : 'verna_w1_temp_summary_metric',
@@ -57,7 +57,7 @@ class SensorDataService:
             sensor_status = SensorStateOut(
                 #TODO  value dict is hard coded right now will have to update for state and other stuff
                 last_value={"value":result[11]},
-                last_timestamp=result[12],
+                last_timestamp=result[12].strftime("%Y-%m-%dT%H:%M:%S.%f"),
                 sensor_health=SensorHealthOut(code_name = result[7])
             )
         else: 
@@ -225,9 +225,38 @@ class UnitService:
         meta_rows = meta_result.fetchall()
         return list(map(self.create_unit_metadata, meta_rows))
 
+    async def get_unit_status(self, unit_id:int) -> Optional[UnitStatus]:
+        session: Session = self.async_session        
 
+        meta_result = await session.execute(text(VWSensorStatus.unit_query) , {'unit_id':unit_id})
+        meta_rows = meta_result.fetchone()
 
+        unit_state = UnitStateOut(
+            last_timestamp=meta_rows[4].strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            unit_health=UnitHealthOut(code_name=meta_rows[0])
+        )
 
+        return UnitStatus(
+            unit_id=meta_rows[1],
+            unit_status=unit_state
+        )
+
+    async def get_location_status(self, location_id : int) -> Optional[LocationStatus]:
+        session: Session = self.async_session        
+
+        meta_result = await session.execute(text(VWSensorStatus.location_query) , {'location_id':location_id})
+        meta_rows = meta_result.fetchone()
+
+        unit_state = LocationStateOut(
+            last_timestamp=meta_rows[4].strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            unit_health=LocationHealthOut(code_name=meta_rows[0])
+        )
+
+        return LocationStatus(
+            unit_id=meta_rows[1],
+            unit_status=unit_state
+        )
+    
 class GraphPlotService:
     @asynccontextmanager
     async def plot_from_sensor_data(self, sensor_metadata: SensorMetadataBase, sensor_data: List[SensorDataOut]) -> Optional[io.BytesIO]:
