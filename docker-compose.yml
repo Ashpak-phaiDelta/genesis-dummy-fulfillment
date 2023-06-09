@@ -1,0 +1,16 @@
+version: '3.0'
+
+services:
+  # Backend for Genesis fulfillment
+  backend:
+    image: genesis/abot-fulfillment
+    environment:
+      - WEB_CONCURRENCY
+      - GENESIS_DB_URI
+      - "PORT=$BACKEND_PORT"
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    expose:
+      - 8079
+    network_mode: host

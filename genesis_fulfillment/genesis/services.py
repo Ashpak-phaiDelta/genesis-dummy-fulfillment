@@ -159,7 +159,7 @@ class SensorDataService:
         sensor_id_search_query = VWSensorStatus.query
 
         filter_query = []
-
+        query_params = {}
 
         if sensor_type is not None and sensor_type != "":
             input_check = True
@@ -172,8 +172,9 @@ class SensorDataService:
 
         if sensor_name is not None and sensor_name != "":
             input_check = True
-            name_sanitized = "%{}%".format(sensor_name.strip())
-            filter_query.append(f" sm.global_sensor_name like '{name_sanitized}'")
+            # name_sanitized = "%{}%".format(sensor_name.strip())
+            query_params['sensor_name'] = "%{}%".format(sensor_name.strip())
+            filter_query.append(f" sm.global_sensor_name like :sensor_name")
         
         if input_check:
             sensor_id_search_query = sensor_id_search_query + f" where {filter_query[0]}"
@@ -185,8 +186,10 @@ class SensorDataService:
 
         # # TODO: Sort by some method (closest match, location, geohash, etc.)
 
+        print("Q", sensor_id_search_query)
+
         sensor_search_result = await session.execute(
-            text(sensor_id_search_query)
+            text(sensor_id_search_query).bindparams(**query_params)
         )
 
         sensor_rows: List[Tuple[Sensor, Unit,  UnitSensorMap]] = sensor_search_result.fetchall()
