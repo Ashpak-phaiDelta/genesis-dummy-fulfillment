@@ -186,7 +186,7 @@ class SensorDataService:
 
         # # TODO: Sort by some method (closest match, location, geohash, etc.)
 
-        print("Q", sensor_id_search_query)
+        # print("Q", sensor_id_search_query)
 
         sensor_search_result = await session.execute(
             text(sensor_id_search_query).bindparams(**query_params)

@@ -151,7 +151,7 @@ async def unit_sensor_map(sensor_id : int, sensor_data_service : SensorDataServi
         sensor_status=sensor_metatdata.sensor_status
     )
 
-@data_router.get("/sensor_data")
+@data_router.get("/sensor")
 async def sensor_data(sensor_id: int,
                       timestamp_from: Optional[datetime] = None,
                       timestamp_to: Optional[datetime] = None,
