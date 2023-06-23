@@ -26,7 +26,8 @@ from .schemas import (PlotlyFigure,  SensorMetadataBase, SensorStatus,SensorHeal
 
 SENSOR_TYPE_TABLE = {
     'Temperature' : 'verna_w1_temp_summary_metric',
-    'Humidity' : 'verna_w1_rh_summary_metric'
+    'Humidity' : 'verna_w1_rh_summary_metric',
+    # 'Energy Meter- units': ''
 }
 
 class JSONEncodeData(json.JSONEncoder):

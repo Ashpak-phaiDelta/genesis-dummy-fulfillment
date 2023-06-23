@@ -9,6 +9,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+#from fastapi.openapi.models import Server
+
 # Routers
 from genesis_fulfillment import genesis
 
@@ -20,7 +22,9 @@ from genesis_fulfillment.config import Settings
 
 def create_app() -> FastAPI:
     ### Application instance ###
-    app = FastAPI()
+    server_test = {"url": "http://uat.phaidelta.com:8079"}#Server(url="http://uat.phaidelta.com:8079")
+
+    app = FastAPI(servers=[server_test])
     settings = Settings()
 
     logging.basicConfig(
@@ -54,17 +58,17 @@ def create_app() -> FastAPI:
 
         # schema_mapping = get_schema_mapping()
 
-        with mutex: # Prevent multiple workers conflicting with each other
-            async with engine.begin() as conn:
-                logger.info("Creating/updating DB schema (if needed)...")
-                await asyncio.gather(*[
-                    conn.execute(
-                        CreateSchema(schema_name, if_not_exists=True)
-                    )
-                    for schema_name in BASE.metadata._schemas
-                ])
-                logger.info("Creating/updating tables (if needed)...")
-                await conn.run_sync(BASE.metadata.create_all)
+        # with mutex: # Prevent multiple workers conflicting with each other
+        #     async with engine.begin() as conn:
+        #         logger.info("Creating/updating DB schema (if needed)...")
+        #         await asyncio.gather(*[
+        #             conn.execute(
+        #                 CreateSchema(schema_name, if_not_exists=True)
+        #             )
+        #            for schema_name in BASE.metadata._schemas
+        #         ])
+        #         logger.info("Creating/updating tables (if needed)...")
+        #         await conn.run_sync(BASE.metadata.create_all)
 
     ### Exception handlers ###
 
