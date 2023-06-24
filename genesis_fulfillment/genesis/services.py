@@ -206,15 +206,16 @@ class UnitService:
 
     @staticmethod
     def create_unit_metadata(result):
-        return UnitMetadata(
-            unit_id=result[0],
-            unit_urn=result[1],
-            unit_alias=result[2]
-        )
+        try:
+            return UnitMetadata(
+                unit_id=result[0],
+                unit_urn=result[1],
+                unit_alias=result[2]
+            )
+        except TypeError:
+            return None
 
     async def get_unit_metadata(self, unit_id: int) -> Optional[UnitMetadata]:
-        session: Session = self.async_session
-
         session: Session = self.async_session
 
         meta_result = await session.execute( text(Unit.query + f" where unit_id = {unit_id}"))
@@ -259,6 +260,17 @@ class UnitService:
             unit_id=meta_rows[1],
             unit_status=unit_state
         )
+    
+    async def get_unit_metadata_from_unit_name(self, unit_name:str)->Optional[UnitMetadata]:
+        unit_name = unit_name.strip()
+        session: Session = self.async_session
+
+        # if unit_name is not None and unit_name != "":
+        #     loc_sanitized = "{}".format(unit_name.strip())
+        query = Unit.query+f' where global_unit_name like  "%{unit_name}%"'
+        meta_result = await session.execute( text(query))
+        meta_rows = meta_result.fetchall()
+        return list(map(self.create_unit_metadata, meta_rows))
     
 class GraphPlotService:
     @asynccontextmanager

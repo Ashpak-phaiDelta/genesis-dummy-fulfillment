@@ -113,6 +113,13 @@ async def get_unit_metadata(unit_id: int, unit_service: UnitService = Depends(Un
 
 # TODO: Add filters
 
+@query_router.get("/unit/find")
+async def get_unit_metadata(unit_name: str, unit_service: UnitService = Depends(UnitService)):
+    unit_metadata = await unit_service.get_unit_metadata_from_unit_name(unit_name)
+    if unit_metadata is None:
+        raise HTTPException(400, detail="Unit of id %s does not exist" % unit_name)
+    return unit_metadata
+
 
 @query_router.get("/unit/list")
 async def unit_list(unit_service: UnitService = Depends(UnitService)):

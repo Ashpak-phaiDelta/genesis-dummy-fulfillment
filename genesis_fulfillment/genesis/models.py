@@ -82,7 +82,7 @@ JOIN
 	unit_sensor_map usm on vgacmsd.sensor_id = usm.sensor_id 
 JOIN 
 	unit_master um on um.unit_id = usm.unit_id 
-join 
+left join 
 	location_master lm on lm.location_id = vgacmsd.location_id 
 WHERE um.unit_id = :unit_id
 	GROUP BY usm.unit_id, um.global_unit_name, um.unit_alias, vgacmsd.location_id, lm.global_location_name, lm.location_alias	
@@ -102,7 +102,7 @@ WHERE um.unit_id = :unit_id
 
 FROM 
 	vw_get_all_metric_summary_data vgacmsd
-join 
+left join 
 	location_master lm on lm.location_id = vgacmsd.location_id 
 WHERE lm.location_id = :location_id
 	GROUP BY vgacmsd.location_id, lm.global_location_name, lm.location_alias"""
