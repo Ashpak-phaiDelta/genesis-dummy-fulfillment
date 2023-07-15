@@ -28,7 +28,9 @@ def get_engine() -> AsyncEngine:
     '''Create and return a db engine using the config'''
     db_settings = GenesisDBSettings()
     return create_async_engine(
-        db_settings.genesis_db_uri
+        db_settings.genesis_db_uri,
+        pool_size=20,
+        pool_recycle=3600
     )
 
 

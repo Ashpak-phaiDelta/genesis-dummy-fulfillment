@@ -168,14 +168,14 @@ class SensorDataService:
 
         if location is not None and location != "":
             input_check = True
-            loc_sanitized = "%{}%".format(location.strip())
-            filter_query.append(f" um.global_unit_name like '{loc_sanitized}'")            
+            # loc_sanitized = "%{}%".format(location.strip())
+            filter_query.append(f" um.global_unit_name like '%{location.strip()}%'")            
 
         if sensor_name is not None and sensor_name != "":
             input_check = True
             # name_sanitized = "%{}%".format(sensor_name.strip())
-            query_params['sensor_name'] = "%{}%".format(sensor_name.strip())
-            filter_query.append(f" sm.global_sensor_name like :sensor_name")
+            # query_params['sensor_name'] = "%{}%".format(sensor_name.strip())
+            filter_query.append(f" sm.global_sensor_name like '%{sensor_name.strip()}%'")
         
         if input_check:
             sensor_id_search_query = sensor_id_search_query + f" where {filter_query[0]}"
