@@ -50,7 +50,7 @@ class VWSensorStatus:
 	lm.location_alias
 
 FROM 
-	vw_get_all_metric_summary_data vgacmsd
+	vw_calc_get_metric_summary_data vgacmsd
 join 
 	sensor_master sm  on sm.sensor_id = vgacmsd.sensor_id 
 JOIN 
@@ -77,7 +77,7 @@ join
 	lm.location_alias
 
 FROM 
-	vw_get_all_metric_summary_data vgacmsd
+	vw_calc_get_metric_summary_data vgacmsd
 JOIN 
 	unit_sensor_map usm on vgacmsd.sensor_id = usm.sensor_id 
 JOIN 
@@ -101,7 +101,7 @@ WHERE um.unit_id = :unit_id
 	lm.location_alias
 
 FROM 
-	vw_get_all_metric_summary_data vgacmsd
+	vw_calc_get_metric_summary_data vgacmsd
 left join 
 	location_master lm on lm.location_id = vgacmsd.location_id 
 WHERE lm.location_id = :location_id
