@@ -57,7 +57,7 @@ JOIN
 	unit_sensor_map usm on sm.sensor_id = usm.sensor_id 
 JOIN 
 	unit_master um on um.unit_id = usm.unit_id 
-join 
+left join 
 	location_master lm on lm.location_id = vgacmsd.location_id 
     """
 
